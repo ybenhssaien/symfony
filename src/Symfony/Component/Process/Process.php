@@ -135,7 +135,7 @@ class Process implements \IteratorAggregate
      * @param mixed|null     $input   The input as stream resource, scalar or \Traversable, or null for no input
      * @param int|float|null $timeout The timeout in seconds or null to disable
      *
-     * @throws RuntimeException When proc_open is not installed
+     * @throws LogicException When proc_open is not installed
      */
     public function __construct($command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
     {
@@ -188,7 +188,7 @@ class Process implements \IteratorAggregate
      *
      * @return static
      *
-     * @throws RuntimeException When proc_open is not installed
+     * @throws LogicException When proc_open is not installed
      */
     public static function fromShellCommandline(string $command, string $cwd = null, array $env = null, $input = null, ?float $timeout = 60)
     {
@@ -393,8 +393,8 @@ class Process implements \IteratorAggregate
      *
      * @return int The exitcode of the process
      *
-     * @throws RuntimeException When process timed out
-     * @throws RuntimeException When process stopped after receiving signal
+     * @throws ProcessSignaledException When process timed out
+     * @throws ProcessSignaledException When process stopped after receiving signal
      * @throws LogicException   When process is not yet started
      */
     public function wait(callable $callback = null)
@@ -438,6 +438,7 @@ class Process implements \IteratorAggregate
      *
      * @throws RuntimeException When process timed out
      * @throws LogicException   When process is not yet started
+     * @throws ProcessTimedOutException In case the timeout was reached
      */
     public function waitUntil(callable $callback): bool
     {
@@ -1391,6 +1392,7 @@ class Process implements \IteratorAggregate
      * @param string $caller   The name of the method that needs fresh outputs
      * @param bool   $blocking Whether to use blocking calls or not
      *
+     * @throws LogicException if the process has not run
      * @throws LogicException in case output has been disabled or process is not started
      */
     private function readPipesForOutput(string $caller, bool $blocking = false)
